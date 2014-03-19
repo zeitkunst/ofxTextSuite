@@ -35,9 +35,6 @@ void ofxTextBlock::init(string fontLocation, float fontSize){
 
     defaultFont.loadFont(fontLocation, fontSize, true, true);
 
-    textFbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
-    fboDirty = true;
-
     //Set up the blank space word
     blankSpaceWord.rawWord = " ";
     blankSpaceWord.width   = defaultFont.stringWidth ("x");
@@ -66,14 +63,9 @@ void ofxTextBlock::drawLeft(float x, float y){
     float   drawY;
 
     float currX = 0;
-    
-    if (fboDirty) {
-        ofLog(OF_LOG_NOTICE, "fboDirty, drawing again...");
-        ofLog(OF_LOG_NOTICE, ofToString(fboDirty));
 
     if (words.size() > 0) {
-        textFbo.begin();
-        ofClear(255, 255, 255, 0);
+
         for(int l=0;l < lines.size(); l++)
         {
             for(int w=0;w < lines[l].wordsID.size(); w++)
@@ -83,7 +75,7 @@ void ofxTextBlock::drawLeft(float x, float y){
                 drawX = x + currX;
                 drawY = y + (defaultFont.getLineHeight() * (l + 1));
 
-                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
+                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b);
                 glPushMatrix();
                 //glTranslatef(drawX, drawY, 0.0f);
                 glScalef(scale, scale, scale);
@@ -97,14 +89,6 @@ void ofxTextBlock::drawLeft(float x, float y){
             currX = 0;
 
         }
-        textFbo.end();
-        textFbo.draw(0, 0);
-        fboDirty = false;
-        ofLog(OF_LOG_NOTICE, ofToString(fboDirty));
-    }
-        
-    } else {
-        textFbo.draw(0, 0);
     }
 }
 
