@@ -91,6 +91,9 @@ class ofxTextBlock
         int     _getLinedWords();
 
     private:
+        ofFbo textFbo;
+        bool fboDirty;
+
 };
 
 #endif // OFXTEXTBLOCK_H
