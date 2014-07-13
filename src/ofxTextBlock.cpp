@@ -68,7 +68,9 @@ void ofxTextBlock::drawLeft(float x, float y){
     float currX = 0;
     
     if (words.size() > 0) {
-        ofClear(255, 255, 255, 0);
+        // TODO
+        // Not sure why this was here...
+        //ofClear(255, 255, 255, 0);
         for(int l=0;l < lines.size(); l++)
         {
             for(int w=0;w < lines[l].wordsID.size(); w++)
