@@ -35,8 +35,8 @@ void ofxTextBlock::init(string fontLocation, float fontSize){
 
     defaultFont.loadFont(fontLocation, fontSize, true, true);
 
-    textFbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
-    fboDirty = true;
+    //textFbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
+    //fboDirty = true;
 
     //Set up the blank space word
     blankSpaceWord.rawWord = " ";
@@ -67,12 +67,7 @@ void ofxTextBlock::drawLeft(float x, float y){
 
     float currX = 0;
     
-    if (fboDirty) {
-        ofLog(OF_LOG_NOTICE, "fboDirty, drawing again...");
-        ofLog(OF_LOG_NOTICE, ofToString(fboDirty));
-
     if (words.size() > 0) {
-        textFbo.begin();
         ofClear(255, 255, 255, 0);
         for(int l=0;l < lines.size(); l++)
         {
@@ -97,14 +92,6 @@ void ofxTextBlock::drawLeft(float x, float y){
             currX = 0;
 
         }
-        textFbo.end();
-        textFbo.draw(0, 0);
-        fboDirty = false;
-        ofLog(OF_LOG_NOTICE, ofToString(fboDirty));
-    }
-        
-    } else {
-        textFbo.draw(0, 0);
     }
 }
 
@@ -138,7 +125,7 @@ void ofxTextBlock::drawCenter(float x, float y){
                 drawX = -(lineWidth / 2) + currX;
                 drawY = defaultFont.getLineHeight() * (l + 1);
 
-                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b);
+                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
 
                 glPushMatrix();
 
@@ -196,7 +183,7 @@ void ofxTextBlock::drawJustified(float x, float y, float boxWidth){
                 drawX = currX;
                 drawY = defaultFont.getLineHeight() * (l + 1);
 
-                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b);
+                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
                 glPushMatrix();
                 //Move to top left point using pre-scaled co-ordinates
                 glTranslatef(x, y, 0.0f);
@@ -242,7 +229,7 @@ void ofxTextBlock::drawRight(float x, float y){
                 drawX = -currX - words[currentWordID].width;
                 drawY = defaultFont.getLineHeight() * (l + 1);
 
-                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b);
+                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
 
                 glPushMatrix();
 
@@ -507,6 +494,48 @@ float ofxTextBlock::getHeight(){
     else return 0;
 
 }
+
+std::vector<std::string> ofxTextBlock::split(const std::string &s, char delim) {
+    vector<std::string> elems;
+    stringstream ss(s);
+    string item;
+    while (getline(ss, item, delim)) {
+        if (!item.empty()) {
+            elems.push_back(item);
+        }
+    }
+
+    return elems;
+}
+
+
+vector<string> ofxTextBlock::fragmentText(float textWidth, float textHeight) {
+    vector<string> textFragments;
+    float charWidth = defaultFont.stringWidth("x");
+    float charHeight = defaultFont.stringHeight("i");
+    float lineHeight = defaultFont.getLineHeight();
+    float maxCharactersPerLine = textWidth/charWidth;
+
+    int numVisibleLines = floor(textHeight/lineHeight);
+
+    int numTextLines = wrapTextX(textWidth);
+
+
+    if (numTextLines < numVisibleLines) {
+        textFragments.push_back(rawText);
+    } else {
+        while (numTextLines > 0) {
+
+        }
+        vector<string> tokens = split(rawText, ' ');
+        int totalCharacters = rawText.length();
+        string foo = "→";
+    }
+
+    return textFragments;
+
+}
+
 
 void ofxTextBlock::setLineHeight(float lineHeight){
 

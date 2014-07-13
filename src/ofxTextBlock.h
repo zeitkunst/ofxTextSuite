@@ -75,6 +75,8 @@ class ofxTextBlock
         void    drawRight(float x, float y);
         void    drawCenter(float x, float y);
         void    drawJustified(float x, float y, float boxWidth);
+        vector<string> fragmentText(float textWidth, float textHeight);
+        vector<string> split(const string &s, char delim);
 
 
         void    forceScale(float _scale);
