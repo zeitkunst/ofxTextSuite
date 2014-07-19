@@ -60,6 +60,7 @@ class ofxTextBlock
         vector<lineBlock>   lines;
 
         void    init(string fontLocation, float fontSize);
+        void    init(string fontLocation, float fontSize, bool _drawOffscreen);
 
         void    setText(string _inputText);
 
@@ -95,6 +96,8 @@ class ofxTextBlock
     private:
         ofFbo textFbo;
         bool fboDirty;
+        GLuint listIndex;
+        bool drawOffscreen;
 
 };
 

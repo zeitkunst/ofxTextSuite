@@ -33,10 +33,11 @@ ofxTextBlock::~ofxTextBlock()
 
 void ofxTextBlock::init(string fontLocation, float fontSize){
 
-    defaultFont.loadFont(fontLocation, fontSize, true, true);
+    textFbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
+    fboDirty = true;
 
-    //textFbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
-    //fboDirty = true;
+    GLuint listIndex = glGenLists(1);
+    defaultFont.loadFont(fontLocation, fontSize, true, true);
 
     //Set up the blank space word
     blankSpaceWord.rawWord = " ";
@@ -66,34 +67,46 @@ void ofxTextBlock::drawLeft(float x, float y){
     float   drawY;
 
     float currX = 0;
-    
-    if (words.size() > 0) {
-        // TODO
-        // Not sure why this was here...
-        //ofClear(255, 255, 255, 0);
-        for(int l=0;l < lines.size(); l++)
-        {
-            for(int w=0;w < lines[l].wordsID.size(); w++)
+   
+    if (fboDirty) { 
+        //textFbo.begin();    
+        //ofClear(0, 0, 0, 1);
+        glNewList(listIndex, GL_COMPILE_AND_EXECUTE);
+        if (words.size() > 0) {
+            // TODO
+            // Not sure why this was here...
+            //ofClear(255, 255, 255, 0);
+            for(int l=0;l < lines.size(); l++)
             {
-                currentWordID = lines[l].wordsID[w];
-
-                drawX = x + currX;
-                drawY = y + (defaultFont.getLineHeight() * (l + 1));
-
-                ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
-                glPushMatrix();
-                //glTranslatef(drawX, drawY, 0.0f);
-                glScalef(scale, scale, scale);
-
-                defaultFont.drawString(words[currentWordID].rawWord.c_str(), drawX, drawY);
-                currX += words[currentWordID].width;
-
-                glPopMatrix();
-
+                for(int w=0;w < lines[l].wordsID.size(); w++)
+                {
+                    currentWordID = lines[l].wordsID[w];
+    
+                    drawX = x + currX;
+                    drawY = y + (defaultFont.getLineHeight() * (l + 1));
+    
+                    ofSetColor(words[currentWordID].color.r, words[currentWordID].color.g, words[currentWordID].color.b, words[currentWordID].color.a);
+                    glPushMatrix();
+                    //glTranslatef(drawX, drawY, 0.0f);
+                    glScalef(scale, scale, scale);
+    
+                    defaultFont.drawString(words[currentWordID].rawWord.c_str(), drawX, drawY);
+                    currX += words[currentWordID].width;
+    
+                    glPopMatrix();
+    
+                }
+                currX = 0;
+    
             }
-            currX = 0;
-
         }
+        //textFbo.end();
+        //textFbo.draw(0, 0);
+        glEndList();
+        fboDirty = false;
+    } else {
+        glCallList(listIndex);
+        //textFbo.draw(0, 0);
     }
 }
 
